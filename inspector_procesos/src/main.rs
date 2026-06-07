@@ -7,22 +7,23 @@ fn main() {
 
     
     unsafe{
-        // zero out the struct and set dwSize so the WinAPI knows what version we're passing
+        //aqui inicializo la variable de tipo PROCESSENTREY32W y creo la estructura
+        // en memoria con el tamaño adecuado para almacenar la informacion de cada proceso
         let mut process_entry: PROCESSENTRY32W = std::mem::zeroed();
         process_entry.dwSize = std::mem::size_of::<PROCESSENTRY32W>() as u32;
         
-        // snapshot of all running processes — kernel keeps this frozen until we close the handle
+        //creo un snapshot de los procesos en ejecucion (handle)
         let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
         if snapshot == INVALID_HANDLE_VALUE {
             panic!("Error al crear snapshot de procesos");
         }
 
-        // load first process into process_entry and initialize the iterator
+        //coloco el primer proceso del snapshot en la estructura process_entry
         Process32FirstW(snapshot, &mut process_entry);
 
         loop{
-            // szExeFile is a [u16; 260] C-style string — find the null terminator to slice only the actual name
+            //itero para extraer el nombre del proceso, buscando el primer caracter nulo (0) para determinar el final de la cadena
             let fin = process_entry.szExeFile.iter().position(|&c| c == 0)
             .unwrap_or(process_entry.szExeFile.len());
             let name_process = String::from_utf16_lossy(&process_entry.szExeFile[..fin]);
