@@ -1,0 +1,11 @@
+[package]
+name = "inspector_procesos"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+windows-sys = { version = "0.52", features = [
+    "Win32_System_Diagnostics_ToolHelp", # Para poder listar y tomar capturas de los procesos
+    "Win32_System_Threading",            # Para abrir procesos y leer sus tokens
+    "Win32_Foundation"                   # Para los tipos de datos de Windows (HANDLE, CloseHandle, etc)
+] }
